@@ -7,10 +7,10 @@ module.exports = Hoge =
   activate: ->
     atom.commands.add 'atom-workspace', 'hoge:open', => @open()
     atom.commands.add 'atom-workspace', 'hoge:close', => @close()
-    alert('FJFOJEWO')
+    # alert('FJFOJEWO')
     console.log(@hogeView)
     @hogeView = new HogeView()
-    @modalPanel = atom.workspace.addRightPanel(item: @hogeView, visible: true, className: 'hoge')
+    @modalPanel = atom.workspace.addRightPanel(item: @hogeView, visible: true, className: 'hoge-panel')
 
   open: ->
     editor = atom.workspace.getActivePaneItem()
