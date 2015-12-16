@@ -3,31 +3,24 @@ HogeView = require './hoge-view'
 
 module.exports = Hoge =
   hogeView: null
-  modalPanel: null
-  subscriptions: null
 
-  activate: (state) ->
-    @hogeView = new HogeView(state.hogeViewState)
-    @modalPanel = atom.workspace.addModalPanel(item: @hogeView.getElement(), visible: false)
+  activate: ->
+    atom.commands.add 'atom-workspace', 'hoge:open', => @open()
+    atom.commands.add 'atom-workspace', 'hoge:close', => @close()
+    alert('FJFOJEWO')
+    console.log(@hogeView)
+    @hogeView = new HogeView()
+    @modalPanel = atom.workspace.addRightPanel(item: @hogeView, visible: true, className: 'hoge')
 
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @subscriptions = new CompositeDisposable
-
-    # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace', 'hoge:toggle': => @toggle()
+  open: ->
+    editor = atom.workspace.getActivePaneItem()
+    cursors = editor.getCursors()
+    editor.insertText('GHOWJOJGEOJGEOJGEOJO')
 
   deactivate: ->
-    @modalPanel.destroy()
-    @subscriptions.dispose()
-    @hogeView.destroy()
 
   serialize: ->
-    hogeViewState: @hogeView.serialize()
 
   toggle: ->
     console.log 'Hoge was toggled!'
-
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
-    else
-      @modalPanel.show()
+    activate()
