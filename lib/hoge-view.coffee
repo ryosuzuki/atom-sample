@@ -1,10 +1,15 @@
 
-{View} = require 'atom-space-pen-views'
+request = require 'request'
+parse = require 'diff-parse'
+hljs = require 'highlight.js'
+{ScrollView} = require 'atom-space-pen-views'
+
+
 
 module.exports =
-class HogeView extends View
+class HogeView extends ScrollView
   @content: ->
-    @div =>
+    @div class: 'hoge-view', =>
       @h1 "HGOEHOGEHOGH"
       @div class: 'snippets', outlet: 'snippets'
 
@@ -14,10 +19,23 @@ class HogeView extends View
 
   getSnippet: =>
     div = @snippets
-    snippets = [
-      { id: 'hoge', code: 'ABC' },
-      { id: 'fuga', code: 'DEF' },
-      { id: 'heah', code: 'GHI' }
-    ]
-    snippets.forEach (snippet) ->
-      div.append("<h1>" + snippet.id + "</h1> <pre>" + snippet.code + "</pre>")
+    request 'http://localhost:3000/arguments', (err, res, body) ->
+      json = JSON.parse body
+      snippets = json.commits
+      snippets.forEach (snippet) ->
+        div.append('<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css">')
+        div.append("<h1>" + snippet.message + "</h1><p>(" + snippet.id + ")</p>")
+        files = parse(snippet.patch)
+        files.forEach (file) ->
+          if (file.to)
+            content = ''
+            file.lines.forEach (line) ->
+              if line.del
+                content += '+ '
+              else if line.add
+                content += '+ '
+              else
+                content += '  '
+              content += line.content
+              content += "\n"
+            div.append("<h2>" + file.from + "</h2><pre>" + hljs.highlight('diff', content).value + "</pre>")
